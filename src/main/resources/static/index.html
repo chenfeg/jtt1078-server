@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>车小米音视频测试DEMO</title>
+		<link rel="stylesheet" href="/css/index.css" />
+		<script src="/js/flv.min.js"></script>
+		<script src="/js/index.js"></script>
+	</head>
+	<body>
+		<div class="top-title">JT/T1078视频机测试DEMO</div>
+		<div class="content">
+			<div class="left-content">
+				<div class="subtitle">直播</div>
+				<div class="content-body">
+					<div class="left-live-block">
+						<div class="input-text">
+							<p>1、获取设备音视频参数 </p>
+							<p>WebSocket地址：<input type="text" id="socketUrl" size="30" maxlength="80"
+									value="" />
+								<span class="live-btn">
+									<button id="connectServerBtn">&nbsp;连&nbsp;&nbsp;接&nbsp;</button>
+								</span>
+							</p>
+							<p>设备号：<input type="text" id="deviceId" size="20" maxlength="20" value="" />
+								<span class="live-btn">
+									<button id="queryAttributeBtn">&nbsp;&nbsp;查&nbsp;&nbsp;询&nbsp;&nbsp;</button>
+								</span>
+							</p>
+						</div>
+						<div class="none-line"></div>
+						<div class="select-live-paras">
+							<p>2、选择参数发送直播指令 </p>
+							<p>直播通道：
+								<select id="liveChannel">
+									<option value="0" selected>--- 请选择 ---</option>
+								</select>
+							</p>
+							<p>直播类型：
+								<select id="MediaType">
+									<option value="0" selected>音视频</option>
+									<option value="1">视频</option>
+									<option value="3">监听</option>
+								</select>
+							</p>
+							<p>码流类型：
+								<select id="StreamType">
+									<option value="0" selected>主码流</option>
+									<option value="1">子码流</option>
+								</select>
+								<span class="live-btn"><button
+										id="StartLiveBtn">&nbsp;&nbsp;发送播放指令&nbsp;&nbsp;</button></span>
+							</p>
+						</div>
+					</div>
+					<div class="live-control-block">
+						<p>3、播放控制 </p>
+						<p>控制类型：
+							<select name="请选择类型" id="commandType">
+								<option value="0">关闭音视频指令</option>
+								<option value="1">切换码流指令</option>
+								<option value="2">暂停码流指令</option>
+								<option value="3">恢复码流指令</option>
+							</select>
+						</p>
+						<p>操作通道：
+							<select id="controlLiveChannel">
+								<option value="0" selected>--- 请选择 ---</option>
+							</select>
+						</p>
+						<p>
+							操作类型：
+							<select name="请选择类型" id="closeType">
+								<option value="0">关闭该通道有关的音视频流</option>
+								<option value="1">只关闭该通道的音频保留视频</option>
+								<option value="2">只关闭该通道视频保留音频</option>
+							</select>
+						</p>
+						<p>
+							码流类型：
+							<select name="请选择类型" id="switchType">
+								<option value="0">主码流</option>
+								<option value="1">子码流</option>
+							</select>
+						</p>
+						<p><button id="liveControlBtn">&nbsp;&nbsp;发送直播控制指令&nbsp;&nbsp;</button></p>
+					</div>
+				</div>
+			</div>
+			<div class="right-content">
+				<div class="subtitle">点播</div>
+				<div class="queryHistoryVideo">
+					设备号:<input type="text" id="deviceId_his" size="12" maxlength="20"
+						value="297034827753" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					通道号:<input type="text" id="channelId_his" size="2" maxlength="2" value="1" />
+					<p>1、按时段点播</p>
+					<p>
+						音视频类型:<select id="videoType_his">
+							<option value="0">音视频</option>
+							<option value="1">音频</option>
+							<option value="2">视频</option>
+							<option value="3">音频或视频</option>
+						</select>
+						&nbsp;&nbsp;&nbsp;&nbsp;码流类型:<select id="streamType_his">
+							<option value="0">所有类型</option>
+							<option value="1">主码流</option>
+							<option value="2">子码流</option>
+						</select>
+						&nbsp;&nbsp;&nbsp;&nbsp;储存器类型:<select id="memoryType_his">
+							<option value="0">主或备</option>
+							<option value="1">主储存器</option>
+							<option value="2">备储存器</option>
+						</select>
+					</p>
+					<p>
+						回放方式:<select id="playbackMethod_his">
+							<option value="0">正常</option>
+							<option value="1">快键</option>
+							<option value="2">关键帧快退</option>
+							<option value="3">关键帧播放</option>
+							<option value="4">单帧上传</option>
+						</select>
+						&nbsp;&nbsp;&nbsp;&nbsp;播放速度:<select id="playSpeed_his">
+							<option value="0">无效</option>
+							<option value="1">1倍</option>
+							<option value="2">2倍</option>
+							<option value="3">4倍</option>
+							<option value="4">8倍</option>
+							<option value="5">16倍</option>
+						</select>
+					</p>
+					<p>起止时间:<input type="text" id="startTime_his" size="20" maxlength="40"
+							value="" />&nbsp;&nbsp;-<input type="text" id="endTime_his" size="20" maxlength="40"
+							value="" />
+						<span class="history-btn"><button
+								id="playHistoryBtn">&nbsp;&nbsp;发送点播指令&nbsp;&nbsp;</button></span>
+					</p>
+					<p>2、点播控制</p>
+					<p>
+						回放指令:<select id="playbackCommand_his">
+							<option value="0">开始回放</option>
+							<option value="1">暂停回放</option>
+							<option value="2">结束回放</option>
+							<option value="3">快速回放</option>
+							<option value="4">关键帧快速回放</option>
+							<option value="5">拖动回放</option>
+							<option value="6">关键帧播放</option>
+						</select>
+						&nbsp;&nbsp;回放速度:<select id="playbackSpeed_his">
+							<option value="0">无效</option>
+							<option value="1">1倍</option>
+							<option value="2">2倍</option>
+							<option value="3">4倍</option>
+							<option value="4">8倍</option>
+							<option value="5">16倍</option>
+						</select>
+					</p>
+					<p>拖动回放位置:<input type="text" id="dragPlayPosition_his" size="20" maxlength="40" value="" />
+						<span class="history-btn"><button
+								id="controllerHistoryBtn">&nbsp;&nbsp;发送点播控制指令&nbsp;&nbsp;</button></span>
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="none-line"></div>
+		<div class="live-block">
+			<ul class="live-list" id="liveChannelList">
+			</ul>
+		</div>
+	</body>
+
+</html>
