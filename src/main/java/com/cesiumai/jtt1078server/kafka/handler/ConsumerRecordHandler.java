@@ -2,6 +2,7 @@ package com.cesiumai.jtt1078server.kafka.handler;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
+import com.cesiumai.jtt1078server.netty.ffmpeg.H264StreamHub;
 import com.cesiumai.jtt1078server.netty.ffmpeg.PushStreamService;
 import com.cesiumai.jtt1078server.websocket.WebSocketSessionManager;
 import lombok.extern.slf4j.Slf4j;
@@ -98,9 +99,10 @@ public class ConsumerRecordHandler {
             jsonObject.put("status", resultCode);
             jsonObject.put("uuid", uuid);
             WebSocketSessionManager.INSTANCE.sendMessage(jsonObject.toString(), webSocketSession);
-            pushStreamService = new PushStreamService(tag, httpFlvPort, ffmpegPath, isDebug);
+            /*pushStreamService = new PushStreamService(tag, httpFlvPort, ffmpegPath, isDebug);
             pushStreamService.start();
-            WebSocketSessionManager.INSTANCE.addFfmpegTheadForTag(tag,pushStreamService);
+            WebSocketSessionManager.INSTANCE.addFfmpegTheadForTag(tag,pushStreamService);*/
+            H264StreamHub.createH264ToStreamInstance(ffmpegPath, tag).run();
         }
     }
 
@@ -160,9 +162,10 @@ public class ConsumerRecordHandler {
                 jsonObject.put("httpsUrl", httpsUrl.replaceAll(REGEX_STRING, tag));
                 jsonObject.put("uuid", uuid);
                 WebSocketSessionManager.INSTANCE.sendMessage(jsonObject.toString(), webSocketSession);
-                pushStreamService = new PushStreamService(tag, httpFlvPort, ffmpegPath, isDebug);
+                /*pushStreamService = new PushStreamService(tag, httpFlvPort, ffmpegPath, isDebug);
                 pushStreamService.start();
-                WebSocketSessionManager.INSTANCE.addFfmpegTheadForTag(tag,pushStreamService);
+                WebSocketSessionManager.INSTANCE.addFfmpegTheadForTag(tag,pushStreamService);*/
+                H264StreamHub.createH264ToStreamInstance(ffmpegPath, tag).run();
             } else {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("action", "Response");

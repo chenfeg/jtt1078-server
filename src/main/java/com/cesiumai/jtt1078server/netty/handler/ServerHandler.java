@@ -1,15 +1,13 @@
 package com.cesiumai.jtt1078server.netty.handler;
 
+import com.cesiumai.jtt1078server.netty.ffmpeg.H264StreamHub;
+import com.cesiumai.jtt1078server.netty.ffmpeg.H264ToStreamService;
 import com.cesiumai.jtt1078server.netty.stream.StreamFrame;
-import com.cesiumai.jtt1078server.netty.stream.StreamFrameSink;
-import com.cesiumai.jtt1078server.netty.stream.StreamHub;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Map;
 
 /**
  * @author wuxiongbin
@@ -25,7 +23,11 @@ public class ServerHandler extends SimpleChannelInboundHandler<DataFrame> {
         //log.info("接收到视频流数据：\n {}", dataFrame);
         String tag = dataFrame.getSIMCardNumber() + "-" + dataFrame.getLogicalChannelNumber();
         //log.info("tag : {}", tag);
-        Map<StreamFrameSink, StreamFrameSink> map = StreamHub.GetStream(tag);
+        //Map<StreamFrameSink, StreamFrameSink> map = StreamHub.GetStream(tag);
+        H264ToStreamService h264ToStreamInstance = H264StreamHub.getH264ToStreamInstance(tag);
+        if(null==h264ToStreamInstance){
+            throw new RuntimeException("未初始化ffmpeg推流实例");
+        }
         int subMark = dataFrame.getSubcontractingTreatmentMark();
         if (subMark == 0b0000) {
             ByteBuf buf = Unpooled.buffer();
@@ -36,12 +38,14 @@ public class ServerHandler extends SimpleChannelInboundHandler<DataFrame> {
             packageSize = 0;
             frame.dwTime = dataFrame.getTimeStamp();
             frame.bIsKey = dataFrame.getDataType() == 0;
-            StreamHub.WriteFrame(map, frame);
+            //StreamHub.WriteFrame(map, frame);
+            h264ToStreamInstance.writeH264Data(dataFrame.getDataBody());
         } else if (subMark == 0b0001) {
             byteBuf.clear();
             //log.info("接收到视频数据帧的第一个包");
             byteBuf.writeBytes(dataFrame.getDataBody());
             packageSize++;
+            h264ToStreamInstance.writeH264Data(dataFrame.getDataBody());
         } else if (subMark == 0b0010) {
             packageSize++;
             //log.info("接收到视频数据帧的最后一个包，该数据帧共有：{} 个包", packageSize);
@@ -52,7 +56,8 @@ public class ServerHandler extends SimpleChannelInboundHandler<DataFrame> {
             StreamFrame frame = new StreamFrame(buf);
             frame.dwTime = dataFrame.getTimeStamp();
             frame.bIsKey = dataFrame.getDataType() == 0;
-            StreamHub.WriteFrame(map, frame);
+            //StreamHub.WriteFrame(map, frame);
+            h264ToStreamInstance.writeH264Data(dataFrame.getDataBody());
             if (packageSize != dataFrame.getPackageNo()) {
                 log.error("出现了丢包，共接收到数据包：{}，最后一个包的包序号为：{}", packageSize, dataFrame.getPackageNo());
             }
@@ -60,6 +65,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<DataFrame> {
             packageSize++;
             //log.info("接收到视频数据帧的中间包");
             byteBuf.writeBytes(dataFrame.getDataBody());
+            h264ToStreamInstance.writeH264Data(dataFrame.getDataBody());
         }
     }
 
