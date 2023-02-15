@@ -3,6 +3,7 @@ package com.cesiumai.jtt1078server.websocket.handle;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.cesiumai.jtt1078server.kafka.KafkaProducer;
+import com.cesiumai.jtt1078server.netty.ffmpeg.H264StreamHub;
 import com.cesiumai.jtt1078server.websocket.WebSocketSessionManager;
 import com.cesiumai.jtt1078server.websocket.dto.ControlLive;
 import com.cesiumai.jtt1078server.websocket.dto.RequestMessage;
@@ -44,7 +45,8 @@ public class ControlLiveHandler implements MessageHandler {
         kafkaProducer.send(jsonMessage);
         if (command == 0) {
             WebSocketSessionManager.INSTANCE.removeLiveTags(tag,session);
-            WebSocketSessionManager.INSTANCE.closeFfmpegTheadForTag(tag);
+            H264StreamHub.closeFfmpegTheadForTag(tag);
+            //WebSocketSessionManager.INSTANCE.closeFfmpegTheadForTag(tag);
         }
     }
 }

@@ -26,7 +26,7 @@ public class H264StreamHub {
         return service;
     }
 
-    public void closeFfmpegTheadForTag(String tag) {
+    public static void closeFfmpegTheadForTag(String tag) {
         if (tagHashMap.containsKey(tag)) {
             H264ToStreamService service = tagHashMap.get(tag);
             service.stopPush();
