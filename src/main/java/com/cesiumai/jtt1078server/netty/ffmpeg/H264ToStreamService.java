@@ -1,5 +1,6 @@
 package com.cesiumai.jtt1078server.netty.ffmpeg;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -32,6 +33,13 @@ public class H264ToStreamService implements Runnable {
                 byte[] h264Data = queue.take();
                 stdin.write(h264Data);
             }
+            InputStream errorStream = process.getErrorStream();
+            int len;
+            byte[] buff = new byte[512];
+            while ((len = errorStream.read(buff)) > -1) {
+                System.out.print(new String(buff, 0, len));
+            }
+            System.out.println("Process FFMPEG exited...");
         } catch (Exception e) {
             e.printStackTrace();
         }
