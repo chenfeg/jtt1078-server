@@ -1,6 +1,7 @@
 package com.cesiumai.jtt1078server.netty.ffmpeg;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.InputStream;
 
@@ -28,11 +29,12 @@ public class PushStreamService extends Thread {
         InputStream stderr;
         int len;
         byte[] buff = new byte[512];
-        String rtmpUrl = "rtmp://localhost/live/{TAG}".replaceAll("\\{TAG\\}", tag);  // 服务和srs4在同一台服务器
-        String cmd = String.format("%s -re -i http://localhost:%d/live/flv?tag=%s -vcodec copy -acodec aac -f flv %s", ffmpegPath, httpFlvPort, tag, rtmpUrl);
-        log.info("Execute: {}", cmd);
+        String rtmpUrl = "rtmp://localhost/live/{TAG}".replaceAll("\\{TAG}", tag);  // 服务和srs4在同一台服务器
+        //String cmd = String.format("%s -re -i http://localhost:%d/live/flv?tag=%s -vcodec copy -acodec aac -f flv %s", ffmpegPath, httpFlvPort, tag, rtmpUrl);
+        String[] command = {ffmpegPath, "-re", "-i", "http://localhost:" + httpFlvPort + "/live/flv?tag=" + tag, "-vcodec", "copy", "-acodec", "aac", "-f", "flv", rtmpUrl};
+        log.info("Execute: {}", StringUtils.join(command, " "));
         try {
-            process = Runtime.getRuntime().exec(cmd);
+            process = Runtime.getRuntime().exec(command);
             stderr = process.getErrorStream();
             while ((len = stderr.read(buff)) > -1) {
                 if (debugMode) System.out.print(new String(buff, 0, len));
