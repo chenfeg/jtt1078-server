@@ -49,9 +49,9 @@ public class DataFrame {
         frame.packageNo = byteBuf.readUnsignedShort();
         byte[] bytes = new byte[6];
         byteBuf.readBytes(bytes);
-        frame.SIMCardNumber = bcd2Str(bytes);
+        frame.SIMCardNumber = bcd2Str(bytes).replaceFirst("^0*", ""); // 去除首位的0
         frame.logicalChannelNumber = byteBuf.readByte() & 0xff;
-        ;
+
         byte b15 = byteBuf.readByte();
         frame.dataType = (b15 >> 4) & 0x0f;
         frame.subcontractingTreatmentMark = b15 & 0x0f;
